@@ -12,6 +12,17 @@ class Settings(BaseSettings):
     alt_growth_weight: float = 0.25
     short_weight: float = 0.15
     momo_weight: float = 0.20
+    
+    # Short interest data source selection
+    use_ortex: bool = Field(False, env="USE_ORTEX")  # Default to free sources
+    finnhub_api_key: str | None = Field(None, env="FINNHUB_API_KEY")
+    fmp_api_key: str | None = Field(None, env="FMP_API_KEY")
+    
+    # Free data source URLs
+    finra_short_sale_url: str = "https://api.finra.org/data/group/otcMarket/name/regShoDaily"
+    finra_short_interest_url: str = "https://api.finra.org/data/group/otcMarket/name/shortInterest"
+    finnhub_base_url: str = "https://finnhub.io/api/v1"
+    fmp_base_url: str = "https://financialmodelingprep.com/api/v4"
 
     class Config:
         env_file = ".env"
