@@ -1,7 +1,7 @@
 __all__ = [
     "config",
     "data",
-    "universe",
+    "universe", 
     "signals",
     "portfolio",
     "backtest",
@@ -9,4 +9,8 @@ __all__ = [
     "scheduler",
     "api",
     "dash_app",
+    "strategies",
+    "data_sources",
+    "benchmarking",
+    "risk_management",
 ]
