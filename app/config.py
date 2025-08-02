@@ -23,6 +23,28 @@ class Settings(BaseSettings):
     finra_short_interest_url: str = "https://api.finra.org/data/group/otcMarket/name/shortInterest"
     finnhub_base_url: str = "https://finnhub.io/api/v1"
     fmp_base_url: str = "https://financialmodelingprep.com/api/v4"
+    
+    # News API keys (optional)
+    newsapi_key: str | None = Field(None, env="NEWSAPI_KEY")
+    alpha_vantage_key: str | None = Field(None, env="ALPHA_VANTAGE_KEY")
+    
+    # Strategy selection and configuration
+    enabled_strategies: str = Field("multi_strategy", env="ENABLED_STRATEGIES")  # Comma-separated
+    
+    # Strategy-specific parameters
+    momentum_volume_threshold: float = Field(3.0, env="MOMENTUM_VOLUME_THRESHOLD")
+    stat_arb_correlation_threshold: float = Field(0.8, env="STAT_ARB_CORRELATION_THRESHOLD")
+    mean_rev_bb_std_dev: float = Field(2.0, env="MEAN_REV_BB_STD_DEV")
+    
+    # Multi-strategy weights
+    multi_stat_arb_weight: float = Field(0.60, env="MULTI_STAT_ARB_WEIGHT")
+    multi_momentum_weight: float = Field(0.25, env="MULTI_MOMENTUM_WEIGHT")
+    multi_mean_rev_weight: float = Field(0.15, env="MULTI_MEAN_REV_WEIGHT")
+    
+    # Risk management toggles
+    enable_position_sizing: bool = Field(True, env="ENABLE_POSITION_SIZING")
+    enable_stop_loss: bool = Field(True, env="ENABLE_STOP_LOSS")
+    max_volume_pct: float = Field(0.03, env="MAX_VOLUME_PCT")  # 3% of daily volume max
 
     class Config:
         env_file = ".env"
