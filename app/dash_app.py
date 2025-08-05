@@ -35,19 +35,7 @@ app_state = {
 }
 
 
-def mount_dash(app: FastAPI, path="/dash"):
-    """Mount enhanced Dash application with comprehensive trading interface."""
-    dash_app = dash.Dash(__name__, server=app, routes_pathname_prefix=path + "/")
-    
-    # Enhanced CSS styling
-    dash_app.layout = html.Div([
-        # Header
-        html.Div([
-            html.H1("🚀 NanoCap Trader - Algorithmic Trading System", 
-                   style={'textAlign': 'center', 'color': '#2E86AB', 'marginBottom': '10px'}),
-            html.P("Advanced multi-strategy trading platform for nano-cap equities", 
-                  style={'textAlign': 'center', 'color': '#666', 'fontSize': '16px'}),
-        ], style={'backgroundColor': '#f8f9fa', 'padding': '20px', 'borderRadius': '10px', 'marginBottom': '20px'}),
+# Placeholder for old mount_dash function - will be defined at the end
         
         # Status Bar
         html.Div(id='status-bar', style={'marginBottom': '20px'}),
@@ -659,3 +647,56 @@ def create_active_tests_display():
         )
     
     return html.Div(test_cards)
+
+
+# Mount the Dash app properly
+def mount_dash(app: FastAPI, path="/dash"):
+    """Mount enhanced Dash application with comprehensive trading interface."""
+    from fastapi.middleware.wsgi import WSGIMiddleware
+    
+    dash_app = dash.Dash(__name__, routes_pathname_prefix=path + "/")
+    
+    # Set the layout here instead of in the function
+    dash_app.layout = create_main_layout()
+    
+    # Register callbacks
+    register_callbacks(dash_app)
+    
+    # Mount the Dash app
+    app.mount(path, WSGIMiddleware(dash_app.server))
+    
+    return dash_app
+
+
+def create_main_layout():
+    """Create the main layout for the Dash app."""
+    return html.Div([
+        # Header
+        html.Div([
+            html.H1("🚀 NanoCap Trader - Algorithmic Trading System", 
+                   style={'textAlign': 'center', 'color': '#2E86AB', 'marginBottom': '10px'}),
+            html.P("Advanced multi-strategy trading platform for nano-cap equities", 
+                  style={'textAlign': 'center', 'color': '#666', 'fontSize': '16px'}),
+        ], style={'backgroundColor': '#f8f9fa', 'padding': '20px', 'borderRadius': '10px', 'marginBottom': '20px'}),
+        
+        # Status bar
+        html.Div(id='status-bar', children='System Status: Running', 
+                style={'textAlign': 'center', 'padding': '10px', 'backgroundColor': '#d4edda', 
+                       'color': '#155724', 'borderRadius': '5px', 'marginBottom': '20px'}),
+        
+        # Auto-refresh component
+        dcc.Interval(id='auto-refresh', interval=5000, n_intervals=0),
+        
+        # Main tabs
+        dcc.Tabs(id='main-tabs', value='tab-overview', children=[
+            dcc.Tab(label='📊 Overview', value='tab-overview'),
+            dcc.Tab(label='⚙️ Strategy Control', value='tab-strategy'),
+            dcc.Tab(label='🧪 A/B Testing', value='tab-ab-testing'),
+            dcc.Tab(label='⚠️ Risk Management', value='tab-risk'),
+            dcc.Tab(label='📈 Performance', value='tab-performance'),
+            dcc.Tab(label='📡 Live Trading', value='tab-live'),
+        ]),
+        
+        # Tab content
+        html.Div(id='tab-content')
+    ])

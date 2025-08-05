@@ -54,11 +54,14 @@ class MultiStrategy(BaseStrategy):
         rebalance_frequency_hours: int = 6,
         **kwargs
     ):
+        # Remove conflicting parameters before calling parent
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in ['strategy_id', 'strategy_type', 'universe']}
+        
         super().__init__(
             strategy_id="multi_strategy",
             strategy_type=StrategyType.MULTI_STRATEGY,
             universe=universe,
-            **kwargs
+            **filtered_kwargs
         )
         
         # Normalize strategy weights
@@ -75,25 +78,28 @@ class MultiStrategy(BaseStrategy):
         self.rebalance_frequency = dt.timedelta(hours=rebalance_frequency_hours)
         
         # Initialize constituent strategies
+        # Filter out conflicting parameters to avoid duplicate keyword arguments
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in ['max_positions', 'strategy_id', 'universe', 'strategy_type']}
+        
         self.stat_arb_strategy = StatisticalArbitrageStrategy(
             universe=universe,
             strategy_id="multi_stat_arb",
             max_positions=int(self.max_positions * 0.6),  # 60% of total positions
-            **kwargs
+            **filtered_kwargs
         )
         
         self.momentum_strategy = MomentumStrategy(
             universe=universe,
             strategy_id="multi_momentum",
             max_positions=int(self.max_positions * 0.3),  # 30% of total positions
-            **kwargs
+            **filtered_kwargs
         )
         
         self.mean_rev_strategy = MeanReversionStrategy(
             universe=universe,
             strategy_id="multi_mean_rev",
             max_positions=int(self.max_positions * 0.3),  # 30% of total positions
-            **kwargs
+            **filtered_kwargs
         )
         
         # Tracking state

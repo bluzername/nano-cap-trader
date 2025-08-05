@@ -55,11 +55,13 @@ class MeanReversionStrategy(BaseStrategy):
         min_volume_ratio: float = 0.5,  # Minimum volume vs average
         **kwargs
     ):
+        # Filter kwargs to avoid conflicts with explicit parameters
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in ['strategy_id', 'strategy_type', 'universe']}
         super().__init__(
             strategy_id="mean_reversion",
             strategy_type=StrategyType.MEAN_REVERSION,
             universe=universe,
-            **kwargs
+            **filtered_kwargs
         )
         
         # Indicator parameters

@@ -42,11 +42,13 @@ class StatisticalArbitrageStrategy(BaseStrategy):
         max_pairs: int = 20,
         **kwargs
     ):
+        # Filter kwargs to avoid conflicts with explicit parameters
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in ['strategy_id', 'strategy_type', 'universe']}
         super().__init__(
             strategy_id="statistical_arbitrage",
             strategy_type=StrategyType.STATISTICAL_ARBITRAGE,
             universe=universe,
-            **kwargs
+            **filtered_kwargs
         )
         
         # Strategy parameters

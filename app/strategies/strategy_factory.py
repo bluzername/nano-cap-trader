@@ -44,7 +44,14 @@ class StrategyFactory:
             default_params = cls._get_default_params(strategy_type)
             default_params.update(kwargs)
             
-            strategy = strategy_class(universe=universe, **default_params)
+            # Special handling for multi_strategy to avoid parameter conflicts
+            if strategy_type == 'multi_strategy':
+                # Remove parameters that MultiStrategy handles internally
+                filtered_params = {k: v for k, v in default_params.items() 
+                                 if k not in ['strategy_id', 'strategy_type']}
+                strategy = strategy_class(universe=universe, **filtered_params)
+            else:
+                strategy = strategy_class(universe=universe, **default_params)
             
             logger.info(f"Created {strategy_type} strategy with {len(universe)} symbols")
             return strategy

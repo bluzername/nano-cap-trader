@@ -209,6 +209,972 @@ TIMEOUT=30
 - Correlation threshold: 0.8
 - Z-score entry: 2.0
 - Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
+## 🚀 Local Deployment
+
+### **Quick Start (5 minutes):**
+
+```bash
+# 1. Clone and setup
+cd nano_cap_trader
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp env.template .env
+# Edit .env with your POLYGON_API_KEY (minimum required)
+
+# 4. Start the system
+uvicorn main:app --reload
+
+# 5. Access interfaces
+# Web GUI: http://127.0.0.1:8000/dash/
+# API Docs: http://127.0.0.1:8000/docs
+```
+
+### **Verification Steps:**
+
+1. **Check API Health:**
+```bash
+curl http://127.0.0.1:8000/api/status
+```
+
+2. **Access Web Interface:**
+   - Navigate to: http://127.0.0.1:8000/dash/
+   - You should see the NanoCap Trader Dashboard
+
+3. **Test Strategy Creation:**
+   - Go to "Strategy Control" tab
+   - Select "Multi Strategy" 
+   - Click "Start Strategy"
+   - Verify strategy appears in "Active Strategies"
+
+---
+
+## ☁️ Cloud Deployment (Render.com)
+
+### **Automated Deployment:**
+
+1. **Connect Repository:**
+   - Push code to GitHub
+   - Connect to Render.com
+   - Select "Web Service"
+
+2. **Configuration:**
+```bash
+# Build Command:
+pip install -r requirements.txt
+
+# Start Command:
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+
+# Environment Variables (in Render dashboard):
+POLYGON_API_KEY=your_key_here
+USE_ORTEX=false
+ENABLED_STRATEGIES=multi_strategy
+```
+
+3. **Custom Domain (Optional):**
+   - Add custom domain in Render dashboard
+   - Configure DNS settings
+
+### **Production Optimizations:**
+```bash
+# For production, add to your .env:
+WORKERS=4
+WORKER_CONNECTIONS=1000
+MAX_REQUESTS=1000
+TIMEOUT=30
+```
+
+---
+
+## 🎮 Using the System
+
+### **1. Web Dashboard Overview**
+
+#### **📊 Overview Tab**
+- **Portfolio metrics**: Real-time P&L, Sharpe ratio, returns
+- **Performance charts**: Cumulative returns, strategy allocation
+- **Recent signals**: Live signal feed with confidence scores
+
+#### **⚙️ Strategy Control Tab**  
+- **Strategy selection**: Choose from 4 research-backed strategies
+- **Universe configuration**: Set symbols to trade (default: large caps for demo)
+- **Real-time control**: Start/stop strategies with live feedback
+
+#### **🧪 A/B Testing Tab**
+- **Multi-strategy comparison**: Up to 5 strategies simultaneously  
+- **Statistical significance testing**: T-tests, Mann-Whitney U
+- **Performance attribution**: Benchmark against Russell 2000, S&P 600
+- **Early stopping**: Bayesian analysis for quick decisions
+
+#### **⚠️ Risk Management Tab**
+- **Real-time monitoring**: VaR, leverage, drawdown tracking
+- **Position limits**: 2-3% daily volume enforcement
+- **Emergency controls**: Instant stop-all functionality
+
+#### **📈 Performance Tab**
+- **Comprehensive metrics**: Alpha, Sharpe, Information Ratio, Calmar
+- **Sector attribution**: Performance breakdown by sector exposure
+- **Risk-adjusted rankings**: Multi-factor performance scoring
+
+#### **📡 Live Trading Tab**  
+- **Real-time positions**: Current holdings with P&L
+- **Signal stream**: Live signals as they're generated
+- **Trading controls**: Start/pause/stop with safety confirmations
+
+### **2. Strategy Configuration**
+
+#### **Multi-Strategy (Recommended for Production)**
+```bash
+# Default allocation (research-optimized):
+- Statistical Arbitrage: 60%
+- Momentum: 25%  
+- Mean Reversion: 15%
+
+# Expected Performance:
+- Annual Alpha: 4.0%
+- Sharpe Ratio: 0.70
+- Max Drawdown: -12%
+```
+
+#### **Individual Strategies**
+```bash
+# Statistical Arbitrage:
+- Correlation threshold: 0.8
+- Z-score entry: 2.0
+- Lookback period: 60 days
 
 # Momentum:
 - Volume threshold: 3.0x average

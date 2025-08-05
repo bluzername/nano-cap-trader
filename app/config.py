@@ -1,12 +1,13 @@
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 class Settings(BaseSettings):
     polygon_api_key: str = Field(..., env="POLYGON_API_KEY")
     ortex_token: str | None = Field(None, env="ORTEX_KEY")
     db_url: str = Field("sqlite:///data.db", env="DB_URL")
-    max_position_value: float = 15000.0  # per‑name $ cap
-    max_portfolio_value: float = 1000000.0  # $1 M AUM
+    max_position_value: float = 8000.0  # per‑name $ cap (16% of $50k portfolio)
+    max_portfolio_value: float = 50000.0  # $50k AUM (realistic for nano-cap)
     insider_weight: float = 0.30
     gaprev_weight: float = 0.10
     alt_growth_weight: float = 0.25
@@ -44,7 +45,13 @@ class Settings(BaseSettings):
     # Risk management toggles
     enable_position_sizing: bool = Field(True, env="ENABLE_POSITION_SIZING")
     enable_stop_loss: bool = Field(True, env="ENABLE_STOP_LOSS")
-    max_volume_pct: float = Field(0.03, env="MAX_VOLUME_PCT")  # 3% of daily volume max
+    enable_short_selling: bool = Field(False, env="ENABLE_SHORT_SELLING")  # Long-only for nano-caps
+    max_volume_pct: float = Field(0.005, env="MAX_VOLUME_PCT")  # 0.5% of daily volume max (realistic)
+    
+    # Transaction cost parameters (realistic broker fees)
+    transaction_cost_pct: float = Field(0.001, env="TRANSACTION_COST_PCT")  # 0.1%
+    min_transaction_cost: float = Field(20.0, env="MIN_TRANSACTION_COST")  # $20 minimum
+    min_position_value: float = Field(4000.0, env="MIN_POSITION_VALUE")  # $4k minimum for cost efficiency
 
     class Config:
         env_file = ".env"

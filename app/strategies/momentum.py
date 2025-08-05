@@ -45,11 +45,13 @@ class MomentumStrategy(BaseStrategy):
         max_momentum_threshold: float = 0.50,  # 50% maximum move filter
         **kwargs
     ):
+        # Filter kwargs to avoid conflicts with explicit parameters
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k not in ['strategy_id', 'strategy_type', 'universe']}
         super().__init__(
             strategy_id="momentum",
             strategy_type=StrategyType.MOMENTUM,
             universe=universe,
-            **kwargs
+            **filtered_kwargs
         )
         
         # Strategy parameters
@@ -87,9 +89,14 @@ class MomentumStrategy(BaseStrategy):
         market_data: Dict[str, pd.DataFrame],
         **kwargs
     ) -> List[Signal]:
-        """Generate momentum signals based on multi-timeframe analysis and news."""
+        """Generate momentum signals based on multi-timeframe analysis, news, and insider activity."""
         try:
             signals = []
+            
+            # Get Form 4 insider data (CRITICAL FIX: This was missing!)
+            insider_data = kwargs.get('form4_data', pd.DataFrame())
+            if not insider_data.empty:
+                logger.info(f"Processing insider data for {len(insider_data)} transactions")
             
             # Get float data for nano-cap filtering
             await self._update_float_data(market_data)
@@ -103,14 +110,17 @@ class MomentumStrategy(BaseStrategy):
             # Get news sentiment scores
             await self._calculate_news_scores()
             
+            # Calculate insider momentum scores (NEW!)
+            insider_scores = self._calculate_insider_momentum(insider_data)
+            
             # Generate signals for each symbol
             for symbol in self.universe:
                 if symbol in market_data and len(market_data[symbol]) > max(self.momentum_timeframes):
-                    signal = await self._generate_symbol_signal(symbol, market_data[symbol])
+                    signal = await self._generate_symbol_signal(symbol, market_data[symbol], insider_scores.get(symbol, 0))
                     if signal:
                         signals.append(signal)
             
-            logger.info(f"Generated {len(signals)} momentum signals")
+            logger.info(f"Generated {len(signals)} momentum signals with insider integration")
             return signals
             
         except Exception as e:
@@ -218,10 +228,65 @@ class MomentumStrategy(BaseStrategy):
             for symbol in self.universe:
                 self.news_scores[symbol] = 0.0
     
+    def _calculate_insider_momentum(self, insider_data: pd.DataFrame) -> Dict[str, float]:
+        """Calculate momentum scores based on insider trading activity (CRITICAL FIX)."""
+        from ..signals import insider_buy_score
+        
+        insider_scores = {}
+        
+        if insider_data.empty:
+            return {symbol: 0.0 for symbol in self.universe}
+        
+        try:
+            # Use the existing insider_buy_score function
+            insider_buy_scores = insider_buy_score(insider_data)
+            
+            # Convert to momentum signals
+            for symbol in self.universe:
+                if symbol in insider_buy_scores.index:
+                    # Insider buying creates positive momentum
+                    # Scale insider score (0-1 range) to momentum strength
+                    raw_score = insider_buy_scores.loc[symbol]
+                    
+                    # Recent insider buying (last 30 days) gets momentum boost
+                    if 'symbol' in insider_data.columns and 'transactionType' in insider_data.columns:
+                        recent_insider_mask = (
+                            (insider_data['symbol'] == symbol) &
+                            (insider_data['transactionType'] == 'P') &  # Purchase
+                            (pd.to_datetime(insider_data.get('timestamp', pd.Series()), errors='coerce') >= 
+                             pd.Timestamp.now() - pd.Timedelta(days=30))
+                        )
+                        
+                        recent_insider_activity = insider_data[recent_insider_mask]
+                        
+                        # Boost momentum for recent activity
+                        momentum_multiplier = 1.0
+                        if len(recent_insider_activity) > 0:
+                            # More recent activity = higher momentum
+                            total_recent_value = recent_insider_activity.get('transactionValue', pd.Series(0)).sum()
+                            if total_recent_value > 100_000:  # $100k+ insider buying
+                                momentum_multiplier = 2.0
+                            elif total_recent_value > 50_000:  # $50k+ insider buying
+                                momentum_multiplier = 1.5
+                    else:
+                        momentum_multiplier = 1.0
+                    
+                    insider_scores[symbol] = raw_score * momentum_multiplier
+                else:
+                    insider_scores[symbol] = 0.0
+            
+            logger.info(f"Calculated insider momentum for {len([s for s in insider_scores.values() if s > 0])} symbols")
+            return insider_scores
+            
+        except Exception as e:
+            logger.error(f"Error calculating insider momentum: {e}")
+            return {symbol: 0.0 for symbol in self.universe}
+    
     async def _generate_symbol_signal(
         self,
         symbol: str,
-        data: pd.DataFrame
+        data: pd.DataFrame,
+        insider_score: float = 0.0
     ) -> Optional[Signal]:
         """Generate momentum signal for a single symbol."""
         try:
@@ -259,10 +324,11 @@ class MomentumStrategy(BaseStrategy):
             # Get news score
             news_score = self.news_scores.get(symbol, 0.0)
             
-            # Combine momentum and news scores
+            # Combine momentum, news, and insider scores (CRITICAL FIX)
             combined_score = (
                 ensemble_score * self.momentum_weight +
-                news_score * self.news_weight * np.sign(ensemble_score)
+                news_score * self.news_weight * np.sign(ensemble_score) +
+                insider_score * 0.4 * np.sign(ensemble_score)  # 40% weight for insider signals
             )
             
             # Determine signal direction

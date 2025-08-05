@@ -8,6 +8,13 @@ import numpy as np
 import asyncio
 import httpx
 import logging
+import hashlib
+
+# Add color formatting for errors and warnings
+RED = "\033[91m"
+RESET = "\033[0m"
+YELLOW = "\033[93m"
+CYAN = "\033[96m"
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +64,7 @@ class PerformanceAnalyzer:
                 return self.benchmark_cache[cache_key]
             
             if benchmark_name not in self.benchmarks:
-                logger.error(f"Unknown benchmark: {benchmark_name}")
+                logger.error(f"{RED}Unknown benchmark: {benchmark_name}{RESET}")
                 return None
             
             symbol = self.benchmarks[benchmark_name]
@@ -76,7 +83,7 @@ class PerformanceAnalyzer:
             return benchmark_data
             
         except Exception as e:
-            logger.error(f"Error getting benchmark data for {benchmark_name}: {e}")
+            logger.error(f"{RED}Error getting benchmark data for {benchmark_name}: {e}{RESET}")
             return None
     
     async def _fetch_benchmark_data(
@@ -90,11 +97,21 @@ class PerformanceAnalyzer:
             # Try Yahoo Finance first
             try:
                 import yfinance as yf
-                data = yf.download(symbol, start=start_date, end=end_date, progress=False)
+                # Explicitly set auto_adjust to keep expected columns stable
+                data = yf.download(symbol, start=start_date, end=end_date, progress=False, auto_adjust=False)
                 
                 if not data.empty:
-                    prices = data['Adj Close']
+                    # Prefer Adj Close when available; fallback to Close
+                    if 'Adj Close' in data.columns:
+                        prices = data['Adj Close']
+                    elif 'Close' in data.columns:
+                        prices = data['Close']
+                    else:
+                        raise KeyError("Neither 'Adj Close' nor 'Close' present in Yahoo Finance data")
                     returns = prices.pct_change().dropna()
+                    logger.info(f"{CYAN}Yahoo Finance loaded for {symbol}: prices={len(prices)}, returns={len(returns)}{RESET}")
+                    logger.debug(f"{CYAN}Yahoo Finance {symbol} returns head: {returns.head(5).to_dict()} index: {list(returns.head(5).index)}{RESET}")
+                    logger.debug(f"{CYAN}Yahoo Finance {symbol} returns hash: {hashlib.md5(returns.values.tobytes()).hexdigest()}{RESET}")
                     
                     return BenchmarkData(
                         name=symbol,
@@ -105,7 +122,7 @@ class PerformanceAnalyzer:
                         end_date=end_date
                     )
             except Exception as e:
-                logger.warning(f"Yahoo Finance failed for {symbol}: {e}")
+                logger.warning(f"{RED}Yahoo Finance failed for {symbol}: {e}{RESET}")
             
             # Fallback to Alpha Vantage if available
             from ..config import get_settings
@@ -115,20 +132,26 @@ class PerformanceAnalyzer:
                 try:
                     data = await self._fetch_from_alpha_vantage(symbol, start_date, end_date, settings.alpha_vantage_key)
                     if data is not None:
+                        logger.info(f"Alpha Vantage loaded for {symbol}: returns={len(data.returns)}")
+                        logger.debug(f"Alpha Vantage {symbol} returns head: {data.returns.head(5).to_dict()} index: {list(data.returns.head(5).index)}")
+                        logger.debug(f"Alpha Vantage {symbol} returns hash: {hashlib.md5(data.returns.values.tobytes()).hexdigest()}")
                         return data
                 except Exception as e:
-                    logger.warning(f"Alpha Vantage failed for {symbol}: {e}")
+                    logger.warning(f"{RED}Alpha Vantage failed for {symbol}: {e}{RESET}")
             
             # Fallback to Polygon
             if hasattr(settings, 'polygon_api_key') and settings.polygon_api_key:
                 try:
                     data = await self._fetch_from_polygon(symbol, start_date, end_date, settings.polygon_api_key)
                     if data is not None:
+                        logger.info(f"Polygon loaded for {symbol}: returns={len(data.returns)}")
+                        logger.debug(f"Polygon {symbol} returns head: {data.returns.head(5).to_dict()} index: {list(data.returns.head(5).index)}")
+                        logger.debug(f"Polygon {symbol} returns hash: {hashlib.md5(data.returns.values.tobytes()).hexdigest()}")
                         return data
                 except Exception as e:
-                    logger.warning(f"Polygon failed for {symbol}: {e}")
+                    logger.warning(f"{RED}Polygon failed for {symbol}: {e}{RESET}")
             
-            logger.error(f"All data sources failed for benchmark {symbol}")
+            logger.error(f"{RED}All data sources failed for benchmark {symbol}{RESET}")
             return None
             
         except Exception as e:
@@ -175,6 +198,9 @@ class PerformanceAnalyzer:
                 
                 price_series = pd.Series(prices, index=dates).sort_index()
                 returns = price_series.pct_change().dropna()
+                logger.info(f"Alpha Vantage parsed for {symbol}: prices={len(price_series)}, returns={len(returns)}")
+                logger.debug(f"Alpha Vantage parsed {symbol} returns head: {returns.head(5).to_dict()} index: {list(returns.head(5).index)}")
+                logger.debug(f"Alpha Vantage parsed {symbol} returns hash: {hashlib.md5(returns.values.tobytes()).hexdigest()}")
                 
                 return BenchmarkData(
                     name=symbol,
@@ -186,7 +212,7 @@ class PerformanceAnalyzer:
                 )
                 
         except Exception as e:
-            logger.error(f"Alpha Vantage error for {symbol}: {e}")
+            logger.error(f"{RED}Alpha Vantage error for {symbol}: {e}{RESET}")
             return None
     
     async def _fetch_from_polygon(
@@ -222,6 +248,9 @@ class PerformanceAnalyzer:
                 
                 price_series = pd.Series(prices, index=dates).sort_index()
                 returns = price_series.pct_change().dropna()
+                logger.info(f"Polygon parsed for {symbol}: prices={len(price_series)}, returns={len(returns)}")
+                logger.debug(f"Polygon parsed {symbol} returns head: {returns.head(5).to_dict()} index: {list(returns.head(5).index)}")
+                logger.debug(f"Polygon parsed {symbol} returns hash: {hashlib.md5(returns.values.tobytes()).hexdigest()}")
                 
                 return BenchmarkData(
                     name=symbol,
@@ -233,7 +262,7 @@ class PerformanceAnalyzer:
                 )
                 
         except Exception as e:
-            logger.error(f"Polygon error for {symbol}: {e}")
+            logger.error(f"{RED}Polygon error for {symbol}: {e}{RESET}")
             return None
     
     def calculate_comprehensive_metrics(
@@ -250,7 +279,7 @@ class PerformanceAnalyzer:
             )
             
             if len(aligned_returns) < 2:
-                logger.warning("Insufficient data for performance calculation")
+                logger.warning(f"{RED}Insufficient data for performance calculation{RESET}")
                 return {}
             
             # Convert to numpy arrays
@@ -363,7 +392,7 @@ class PerformanceAnalyzer:
             }
             
         except Exception as e:
-            logger.error(f"Error calculating performance metrics: {e}")
+            logger.error(f"{RED}Error calculating performance metrics: {e}{RESET}")
             return {}
     
     def calculate_rolling_metrics(
@@ -408,7 +437,7 @@ class PerformanceAnalyzer:
             return pd.DataFrame(rolling_metrics).set_index('date')
             
         except Exception as e:
-            logger.error(f"Error calculating rolling metrics: {e}")
+            logger.error(f"{RED}Error calculating rolling metrics: {e}{RESET}")
             return pd.DataFrame()
     
     def _is_cache_valid(self, cache_key: str) -> bool:
@@ -439,8 +468,13 @@ class PerformanceAnalyzer:
             end_date = strategy_returns.index[-1]
             
             for benchmark_name in benchmark_names:
-                benchmark_data = await self.get_benchmark_data(benchmark_name, start_date, end_date)
+                # Bypass cache during multi-benchmark comparison to avoid stale/identical series
+                benchmark_data = await self.get_benchmark_data(benchmark_name, start_date, end_date, use_cache=False)
                 if benchmark_data:
+                    if benchmark_data.returns is None or benchmark_data.returns.empty:
+                        logger.warning(f"{RED}Benchmark {benchmark_name} returned empty series for {benchmark_data.symbol}{RESET}")
+                    else:
+                        logger.debug(f"{YELLOW}Benchmark {benchmark_name} ({benchmark_data.symbol}) returns head: {benchmark_data.returns.head(5).to_dict()} index: {list(benchmark_data.returns.head(5).index)} hash: {hashlib.md5(benchmark_data.returns.values.tobytes()).hexdigest()}{RESET}")
                     metrics = self.calculate_comprehensive_metrics(strategy_returns, benchmark_data)
                     results[benchmark_name] = metrics
         
