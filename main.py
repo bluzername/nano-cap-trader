@@ -1,12 +1,32 @@
 """Main ASGI entry point used by Render deployment.
 Run with:  gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:10000
+
+For remote access:
+- Development: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+- Production: gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 """
+import os
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from app.api import router as api_router
 from app.dash_app_simple import mount_dash
+from app.security import SecurityMiddleware, create_security_config
 
-app = FastAPI(title="NanoCap Trader")
+app = FastAPI(
+    title="NanoCap Trader",
+    description="🚀 Professional algorithmic trading platform for nano-cap equities",
+    version="2.0.0"
+)
+
+# Add security middleware if enabled
+security_config = create_security_config()
+if security_config['enable_auth'] or security_config['allowed_ips']:
+    app.add_middleware(
+        SecurityMiddleware,
+        allowed_ips=security_config['allowed_ips'],
+        rate_limit=security_config['rate_limit']
+    )
+
 app.include_router(api_router)
 
 # Mount Dash GUI

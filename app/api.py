@@ -9,8 +9,12 @@ from .config import get_settings
 from .benchmarking import PerformanceAnalyzer, ABTestFramework
 from .strategies.strategy_factory import StrategyFactory
 from .real_market_data import get_real_market_data, FilterWarning
+# from .api.backtesting import router as backtesting_router
 
 router = APIRouter(prefix="/api", tags=["core"])
+
+# Include backtesting router
+# router.include_router(backtesting_router)
 _portfolio = Portfolio()
 logger = logging.getLogger(__name__)
 

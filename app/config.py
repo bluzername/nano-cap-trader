@@ -52,6 +52,19 @@ class Settings(BaseSettings):
     transaction_cost_pct: float = Field(0.001, env="TRANSACTION_COST_PCT")  # 0.1%
     min_transaction_cost: float = Field(20.0, env="MIN_TRANSACTION_COST")  # $20 minimum
     min_position_value: float = Field(4000.0, env="MIN_POSITION_VALUE")  # $4k minimum for cost efficiency
+    
+    # Enhanced data source APIs (optional)
+    fintel_api_key: str | None = Field(None, env="FINTEL_API_KEY")
+    whalewisdom_api_key: str | None = Field(None, env="WHALEWISDOM_API_KEY")
+    tradier_api_key: str | None = Field(None, env="TRADIER_API_KEY")
+    benzinga_api_key: str | None = Field(None, env="BENZINGA_API_KEY")
+    
+    # Remote access security settings
+    enable_auth: bool = Field(False, env="ENABLE_AUTH")
+    auth_username: str = Field("admin", env="AUTH_USERNAME")
+    auth_password: str = Field("changeme123", env="AUTH_PASSWORD")
+    allowed_ips: str = Field("", env="ALLOWED_IPS")
+    rate_limit: int = Field(100, env="RATE_LIMIT")
 
     class Config:
         env_file = ".env"
