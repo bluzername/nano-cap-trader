@@ -20,3 +20,10 @@ statsmodels>=0.14.0
 plotly>=5.15.0
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
+# Enhanced ML and data processing for insider strategies
+xgboost>=1.7.0
+lightgbm>=3.3.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+# Optional: TensorFlow for neural networks (uncomment if needed)
+# tensorflow>=2.13.0
