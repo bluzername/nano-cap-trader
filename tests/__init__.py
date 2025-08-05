@@ -1,0 +1,1 @@
+"""Test suite for the nano-cap trading system."""

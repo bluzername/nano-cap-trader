@@ -4,7 +4,6 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     polygon_api_key: str = Field(..., env="POLYGON_API_KEY")
-    ortex_token: str | None = Field(None, env="ORTEX_KEY")
     db_url: str = Field("sqlite:///data.db", env="DB_URL")
     max_position_value: float = 8000.0  # per‑name $ cap (16% of $50k portfolio)
     max_portfolio_value: float = 50000.0  # $50k AUM (realistic for nano-cap)
@@ -28,6 +27,12 @@ class Settings(BaseSettings):
     # News API keys (optional)
     newsapi_key: str | None = Field(None, env="NEWSAPI_KEY")
     alpha_vantage_key: str | None = Field(None, env="ALPHA_VANTAGE_KEY")
+    
+    # Additional API keys for health check compatibility
+    alpha_vantage_api_key: str | None = Field(None, env="ALPHA_VANTAGE_API_KEY")
+    ortex_token: str | None = Field(None, env="ORTEX_TOKEN")  # Alternative name
+    database_url: str = Field("sqlite:///./nanocap_trading.db", env="DATABASE_URL")
+    max_daily_trades: int = Field(100, env="MAX_DAILY_TRADES")
     
     # Strategy selection and configuration
     enabled_strategies: str = Field("multi_strategy", env="ENABLED_STRATEGIES")  # Comma-separated

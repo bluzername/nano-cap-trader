@@ -9,6 +9,7 @@ from .config import get_settings
 from .benchmarking import PerformanceAnalyzer, ABTestFramework
 from .strategies.strategy_factory import StrategyFactory
 from .real_market_data import get_real_market_data, FilterWarning
+from .universe import get_default_universe, get_high_volume_universe
 # from .api.backtesting import router as backtesting_router
 
 router = APIRouter(prefix="/api", tags=["core"])
@@ -648,23 +649,8 @@ async def single_benchmark(
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
         
-        # Get strategy instance with nano-cap universe (market cap < $350M)
-        mock_universe = [
-            # Healthcare & Biotech nano-caps
-            "ADTX", "APTO", "AVIR", "BBAI", "BCEL", "BDSX", "CELC", "CELU", 
-            "CGTX", "CRMD", "DMAC", "DRMA", "ELDN", "EVAX", "GTHX", "HOWL",
-            
-            # Technology & Software nano-caps  
-            "INSG", "KTRA", "LTRN", "MMAT", "NMTC", "ONCT", "OPTT", "PGNY",
-            "PRPL", "PTGX", "QNST", "RBOT", "RUBY", "SEER", "SGTX", "SOUN",
-            
-            # Financial & Services nano-caps
-            "LOVE", "MGIC", "LOAN", "TREE", "CLOV", "SOFI", "UPST", "BLZE",
-            "BMEA", "BTBT", "CNET", "EAST", "FNKO", "GEVO", "HCDI", "INMB",
-            
-            # Consumer & Retail nano-caps
-            "KOSS", "MARK"
-        ]  # 50 nano-cap stocks for realistic strategy evaluation
+        # Use the comprehensive nano-cap universe
+        mock_universe = get_default_universe()  # Top 100 nano-cap stocks
         strategy_instance = _strategy_factory.create_strategy(strategy, mock_universe)
         if not strategy_instance:
             return {"error": f"Unknown strategy: {strategy}"}
@@ -797,25 +783,9 @@ async def ab_test(data: dict):
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
         
-        # Create strategy instances
+        # Create strategy instances using comprehensive nano-cap universe
         strategy_instances = []
-        # Use same nano-cap universe as single benchmark for consistency
-        mock_universe = [
-            # Healthcare & Biotech nano-caps
-            "ADTX", "APTO", "AVIR", "BBAI", "BCEL", "BDSX", "CELC", "CELU", 
-            "CGTX", "CRMD", "DMAC", "DRMA", "ELDN", "EVAX", "GTHX", "HOWL",
-            
-            # Technology & Software nano-caps  
-            "INSG", "KTRA", "LTRN", "MMAT", "NMTC", "ONCT", "OPTT", "PGNY",
-            "PRPL", "PTGX", "QNST", "RBOT", "RUBY", "SEER", "SGTX", "SOUN",
-            
-            # Financial & Services nano-caps
-            "LOVE", "MGIC", "LOAN", "TREE", "CLOV", "SOFI", "UPST", "BLZE",
-            "BMEA", "BTBT", "CNET", "EAST", "FNKO", "GEVO", "HCDI", "INMB",
-            
-            # Consumer & Retail nano-caps
-            "KOSS", "MARK"
-        ]  # 50 nano-cap stocks for realistic A/B testing
+        mock_universe = get_default_universe()  # Top 100 nano-cap stocks for A/B testing
         for strategy_name in strategies:
             strategy_instance = _strategy_factory.create_strategy(strategy_name, mock_universe)
             if strategy_instance:
@@ -1263,8 +1233,8 @@ async def get_current_signals(
         if universe:
             symbols = [s.strip() for s in universe.split(",")]
         else:
-            # Default nano-cap universe
-            symbols = ["BBAI", "RBOT", "LOVE", "SGTX", "NVOS", "MULN", "SNDL", "HEXO", "TLRY", "ACB"]
+            # Default nano-cap universe - use high volume subset for better performance
+            symbols = get_high_volume_universe()
         
         # Create strategy instance
         strategy_instance = _strategy_factory.create_strategy(strategy, symbols)
