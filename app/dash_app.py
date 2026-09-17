@@ -35,7 +35,9 @@ app_state = {
 }
 
 
-# Placeholder for old mount_dash function - will be defined at the end
+def create_main_layout():
+    """Top-level layout: status bar, tab strip, tab content, refresh timer."""
+    return html.Div([
         
         # Status Bar
         html.Div(id='status-bar', style={'marginBottom': '20px'}),
@@ -64,11 +66,7 @@ app_state = {
         html.Div(id='hidden-data', style={'display': 'none'})
         
     ], style={'margin': '20px', 'fontFamily': 'Arial, sans-serif'})
-    
-    # Register callbacks
-    register_callbacks(dash_app)
-    
-    return dash_app
+
 
 
 def register_callbacks(dash_app):

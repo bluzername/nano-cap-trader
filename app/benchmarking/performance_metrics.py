@@ -128,9 +128,9 @@ class PerformanceAnalyzer:
             from ..config import get_settings
             settings = get_settings()
             
-            if hasattr(settings, 'alpha_vantage_key') and settings.alpha_vantage_key:
+            if hasattr(settings, 'alpha_vantage_api_key') and settings.alpha_vantage_api_key:
                 try:
-                    data = await self._fetch_from_alpha_vantage(symbol, start_date, end_date, settings.alpha_vantage_key)
+                    data = await self._fetch_from_alpha_vantage(symbol, start_date, end_date, settings.alpha_vantage_api_key)
                     if data is not None:
                         logger.info(f"Alpha Vantage loaded for {symbol}: returns={len(data.returns)}")
                         logger.debug(f"Alpha Vantage {symbol} returns head: {data.returns.head(5).to_dict()} index: {list(data.returns.head(5).index)}")

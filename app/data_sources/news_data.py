@@ -36,7 +36,7 @@ class NewsDataProvider:
     
     def __init__(self):
         self.newsapi_key = getattr(_settings, 'newsapi_key', None)
-        self.alpha_vantage_key = getattr(_settings, 'alpha_vantage_key', None)
+        self.alpha_vantage_key = getattr(_settings, 'alpha_vantage_api_key', None)
         self.polygon_key = _settings.polygon_api_key
         
         # API endpoints

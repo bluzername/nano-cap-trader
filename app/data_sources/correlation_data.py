@@ -22,7 +22,7 @@ class CorrelationDataProvider:
     """Multi-source correlation and cointegration data provider."""
     
     def __init__(self):
-        self.alpha_vantage_key = getattr(_settings, 'alpha_vantage_key', None)
+        self.alpha_vantage_key = getattr(_settings, 'alpha_vantage_api_key', None)
         self.polygon_key = _settings.polygon_api_key
         
         # Cache for computed correlations

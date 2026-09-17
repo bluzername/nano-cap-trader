@@ -1,78 +1,106 @@
-from pydantic import Field
-from pydantic_settings import BaseSettings
+"""Application settings loaded from environment variables and an optional .env file.
+
+Every field maps to an environment variable of the same name in upper case
+(POLYGON_API_KEY, MAX_POSITION_VALUE, ...). Fields that were renamed keep their
+old variable name as an accepted alias so existing .env files keep working.
+"""
 from functools import lru_cache
 
+from pydantic import AliasChoices, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
 class Settings(BaseSettings):
-    polygon_api_key: str = Field(..., env="POLYGON_API_KEY")
-    db_url: str = Field("sqlite:///data.db", env="DB_URL")
-    max_position_value: float = 8000.0  # per‑name $ cap (16% of $50k portfolio)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        populate_by_name=True,
+        extra="ignore",
+    )
+
+    # Required
+    polygon_api_key: str
+
+    # Storage. DATABASE_URL is canonical; DB_URL is accepted for older .env files.
+    database_url: str = Field(
+        "sqlite:///data.db",
+        validation_alias=AliasChoices("DATABASE_URL", "DB_URL", "database_url", "db_url"),
+    )
+
+    # Portfolio limits
+    max_position_value: float = 8000.0  # per-name cap in dollars (16% of a $50k book)
     max_portfolio_value: float = 50000.0  # $50k AUM (realistic for nano-cap)
+    max_daily_trades: int = 100
+
+    # Composite signal weights
     insider_weight: float = 0.30
     gaprev_weight: float = 0.10
     alt_growth_weight: float = 0.25
     short_weight: float = 0.15
     momo_weight: float = 0.20
-    
-    # Short interest data source selection
-    use_ortex: bool = Field(False, env="USE_ORTEX")  # Default to free sources
-    finnhub_api_key: str | None = Field(None, env="FINNHUB_API_KEY")
-    fmp_api_key: str | None = Field(None, env="FMP_API_KEY")
-    
+
+    # Short interest data source selection. use_ortex is the on/off switch,
+    # ortex_token is the credential. ORTEX_KEY is accepted as an alias.
+    use_ortex: bool = False
+    ortex_token: str | None = Field(
+        None,
+        validation_alias=AliasChoices("ORTEX_TOKEN", "ORTEX_KEY", "ortex_token"),
+    )
+    finnhub_api_key: str | None = None
+    fmp_api_key: str | None = None
+
     # Free data source URLs
     finra_short_sale_url: str = "https://api.finra.org/data/group/otcMarket/name/regShoDaily"
     finra_short_interest_url: str = "https://api.finra.org/data/group/otcMarket/name/shortInterest"
     finnhub_base_url: str = "https://finnhub.io/api/v1"
     fmp_base_url: str = "https://financialmodelingprep.com/api/v4"
-    
-    # News API keys (optional)
-    newsapi_key: str | None = Field(None, env="NEWSAPI_KEY")
-    alpha_vantage_key: str | None = Field(None, env="ALPHA_VANTAGE_KEY")
-    
-    # Additional API keys for health check compatibility
-    alpha_vantage_api_key: str | None = Field(None, env="ALPHA_VANTAGE_API_KEY")
-    ortex_token: str | None = Field(None, env="ORTEX_TOKEN")  # Alternative name
-    database_url: str = Field("sqlite:///./nanocap_trading.db", env="DATABASE_URL")
-    max_daily_trades: int = Field(100, env="MAX_DAILY_TRADES")
-    
-    # Strategy selection and configuration
-    enabled_strategies: str = Field("multi_strategy", env="ENABLED_STRATEGIES")  # Comma-separated
-    
-    # Strategy-specific parameters
-    momentum_volume_threshold: float = Field(3.0, env="MOMENTUM_VOLUME_THRESHOLD")
-    stat_arb_correlation_threshold: float = Field(0.8, env="STAT_ARB_CORRELATION_THRESHOLD")
-    mean_rev_bb_std_dev: float = Field(2.0, env="MEAN_REV_BB_STD_DEV")
-    
-    # Multi-strategy weights
-    multi_stat_arb_weight: float = Field(0.60, env="MULTI_STAT_ARB_WEIGHT")
-    multi_momentum_weight: float = Field(0.25, env="MULTI_MOMENTUM_WEIGHT")
-    multi_mean_rev_weight: float = Field(0.15, env="MULTI_MEAN_REV_WEIGHT")
-    
-    # Risk management toggles
-    enable_position_sizing: bool = Field(True, env="ENABLE_POSITION_SIZING")
-    enable_stop_loss: bool = Field(True, env="ENABLE_STOP_LOSS")
-    enable_short_selling: bool = Field(False, env="ENABLE_SHORT_SELLING")  # Long-only for nano-caps
-    max_volume_pct: float = Field(0.005, env="MAX_VOLUME_PCT")  # 0.5% of daily volume max (realistic)
-    
-    # Transaction cost parameters (realistic broker fees)
-    transaction_cost_pct: float = Field(0.001, env="TRANSACTION_COST_PCT")  # 0.1%
-    min_transaction_cost: float = Field(20.0, env="MIN_TRANSACTION_COST")  # $20 minimum
-    min_position_value: float = Field(4000.0, env="MIN_POSITION_VALUE")  # $4k minimum for cost efficiency
-    
-    # Enhanced data source APIs (optional)
-    fintel_api_key: str | None = Field(None, env="FINTEL_API_KEY")
-    whalewisdom_api_key: str | None = Field(None, env="WHALEWISDOM_API_KEY")
-    tradier_api_key: str | None = Field(None, env="TRADIER_API_KEY")
-    benzinga_api_key: str | None = Field(None, env="BENZINGA_API_KEY")
-    
-    # Remote access security settings
-    enable_auth: bool = Field(False, env="ENABLE_AUTH")
-    auth_username: str = Field("admin", env="AUTH_USERNAME")
-    auth_password: str = Field("changeme123", env="AUTH_PASSWORD")
-    allowed_ips: str = Field("", env="ALLOWED_IPS")
-    rate_limit: int = Field(100, env="RATE_LIMIT")
 
-    class Config:
-        env_file = ".env"
+    # News and fundamentals (optional). ALPHA_VANTAGE_KEY is accepted as an alias.
+    newsapi_key: str | None = None
+    alpha_vantage_api_key: str | None = Field(
+        None,
+        validation_alias=AliasChoices(
+            "ALPHA_VANTAGE_API_KEY", "ALPHA_VANTAGE_KEY", "alpha_vantage_api_key"
+        ),
+    )
+
+    # Strategy selection (comma-separated list of strategy_factory names)
+    enabled_strategies: str = "multi_strategy"
+
+    # Strategy-specific parameters
+    momentum_volume_threshold: float = 3.0
+    stat_arb_correlation_threshold: float = 0.8
+    mean_rev_bb_std_dev: float = 2.0
+
+    # Multi-strategy weights
+    multi_stat_arb_weight: float = 0.60
+    multi_momentum_weight: float = 0.25
+    multi_mean_rev_weight: float = 0.15
+
+    # Risk management toggles
+    enable_position_sizing: bool = True
+    enable_stop_loss: bool = True
+    enable_short_selling: bool = False  # long-only for nano-caps
+    max_volume_pct: float = 0.005  # 0.5% of daily volume max
+
+    # Transaction cost parameters
+    transaction_cost_pct: float = 0.001  # 0.1%
+    min_transaction_cost: float = 20.0  # $20 minimum
+    min_position_value: float = 4000.0  # $4k minimum for cost efficiency
+
+    # Enhanced insider data sources (optional)
+    fintel_api_key: str | None = None
+    whalewisdom_api_key: str | None = None
+    tradier_api_key: str | None = None
+    benzinga_api_key: str | None = None
+
+    # Remote access security
+    enable_auth: bool = False
+    auth_username: str = "admin"
+    auth_password: str = "changeme123"
+    allowed_ips: str = ""
+    rate_limit: int = 100
+
 
 @lru_cache
 def get_settings() -> Settings:

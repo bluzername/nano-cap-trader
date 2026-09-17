@@ -73,3 +73,8 @@ data.db
 *.sqlite3
 logs/
 *.log
+# Ad-hoc browser/debug scripts and captured pages (removed from the repo)
+/dash_page*.html
+/ab_test_response.json
+/*browser_test*.py
+/debug_test_suite.py

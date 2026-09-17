@@ -146,9 +146,10 @@ def calculate_days_to_cover(shares_short: float, avg_volume: float, price: float
     Returns:
         Days to cover ratio
     """
-    if shares_short <= 0 or avg_volume <= 0 or price <= 0:
+    if shares_short <= 0 or price <= 0:
         return 0.0
-        
+
+    # Zero volume is floored to one share so days-to-cover stays finite.
     daily_share_volume = max(1, avg_volume)
     return shares_short / daily_share_volume
 
