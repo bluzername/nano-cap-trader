@@ -30,6 +30,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from app.config import get_settings
+from tests.conftest import requires_live_polygon
 from app.strategies.strategy_factory import StrategyFactory
 from app.real_market_data import get_real_market_data
 from app.universe import get_high_volume_universe, get_default_universe
@@ -82,6 +83,7 @@ class TestConfiguration:
         assert len(universe) <= 200, f"Universe too large: {len(universe)} stocks"
 
 
+@requires_live_polygon
 class TestMarketDataIntegration:
     """Test market data fetching and processing"""
     
@@ -131,6 +133,7 @@ class TestMarketDataIntegration:
         assert any(s in result.symbols_with_data for s in valid_symbols)
 
 
+@requires_live_polygon
 class TestStrategyExecution:
     """Test strategy execution and signal generation"""
     
@@ -321,6 +324,7 @@ class TestDataQualityAndValidation:
     """Test data quality and validation"""
     
     @pytest.mark.asyncio
+    @requires_live_polygon
     async def test_universe_data_availability(self):
         """Test that we can get data for most universe stocks"""
         universe = get_high_volume_universe()  # Use high-volume subset
@@ -359,6 +363,7 @@ class TestErrorHandlingAndRecovery:
     """Test error handling and system recovery"""
     
     @pytest.mark.asyncio
+    @requires_live_polygon
     async def test_api_rate_limiting_handling(self):
         """Test handling of API rate limits"""
         # Test with many symbols to potentially trigger rate limits
@@ -393,6 +398,7 @@ class TestErrorHandlingAndRecovery:
 
 
 # Integration test runners
+@requires_live_polygon
 class TestEndToEndWorkflow:
     """Full end-to-end workflow tests"""
     

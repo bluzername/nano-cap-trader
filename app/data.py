@@ -8,7 +8,7 @@ from sqlalchemy.types import Float, Integer, Date, String
 from .config import get_settings
 
 _settings = get_settings()
-_engine = create_engine(_settings.db_url, echo=False, future=True)
+_engine = create_engine(_settings.database_url, echo=False, future=True)
 
 _POLYGON = "https://api.polygon.io"
 
