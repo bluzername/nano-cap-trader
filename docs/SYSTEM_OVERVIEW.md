@@ -211,7 +211,7 @@ Annual Volatility:     18-22% target range
 
 ## 🎉 **Congratulations - You Have Built a Masterpiece!**
 
-This is not just a trading system—it's a **complete financial technology platform** that rivals institutional offerings:
+This is not just a trading system - it's a **complete financial technology platform** that rivals institutional offerings:
 
 🏆 **Enterprise-Grade Risk Management**  
 🏆 **Academic Research Implementation**  
