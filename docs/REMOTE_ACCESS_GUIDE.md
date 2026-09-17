@@ -11,8 +11,10 @@ This guide shows you how to access your NanoCap Trader system remotely via the i
 # Simple approach
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-# Or use the provided script
-./start_remote.sh
+# Or production-style with gunicorn
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 \
+    --workers 1 --timeout 300 --keep-alive 30 --max-requests 1000 --preload \
+    --access-logfile - --error-logfile -
 ```
 
 2. **Find your server's IP address:**
@@ -85,7 +87,10 @@ ngrok config add-authtoken YOUR_TOKEN_HERE
 
 2. **Start with ngrok:**
 ```bash
-./start_with_ngrok.sh
+# terminal 1: the app, bound to localhost only
+uvicorn main:app --host 127.0.0.1 --port 8000
+# terminal 2: the tunnel (dashboard at http://127.0.0.1:4040)
+ngrok http 8000
 ```
 
 3. **Access via ngrok URL:**
@@ -322,7 +327,9 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ### **Personal Use**
 ```bash
 # With basic security
-./start_remote.sh
+gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 \
+    --workers 1 --timeout 300 --keep-alive 30 --max-requests 1000 --preload \
+    --access-logfile - --error-logfile -
 # + Enable AUTH in .env
 ```
 
@@ -335,7 +342,10 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ### **Demo/Presentation**
 ```bash
 # Use ngrok for temporary access
-./start_with_ngrok.sh
+# terminal 1: the app, bound to localhost only
+uvicorn main:app --host 127.0.0.1 --port 8000
+# terminal 2: the tunnel (dashboard at http://127.0.0.1:4040)
+ngrok http 8000
 ```
 
 ---

@@ -90,7 +90,7 @@ def mount_dash(app: FastAPI, path="/dash"):
             html.A("🧪 Benchmarking", href="/api/benchmark", target="_blank", style={'margin': '10px', 'display': 'block'}),
             html.A("📈 Trading Signals", href="/api/signals/dashboard", target="_blank", style={'margin': '10px', 'display': 'block'}),
             html.A("🔍 Raw API Data", href="/api/status", target="_blank", style={'margin': '10px', 'display': 'block'}),
-            html.A("📖 Deployment Guide", href="https://github.com/bluzername/nano_cap_trader/blob/main/DEPLOYMENT_GUIDE.md", target="_blank", style={'margin': '10px', 'display': 'block'}),
+            html.A("📖 Deployment Guide", href="https://github.com/bluzername/nano-cap-trader/blob/main/docs/DEPLOYMENT_GUIDE.md", target="_blank", style={'margin': '10px', 'display': 'block'}),
         ], style={'backgroundColor': '#f0f8f0', 'padding': '20px', 'borderRadius': '10px', 'margin': '20px'}),
         
         html.Div([
