@@ -1,6 +1,6 @@
 # Runtime and test dependencies. Floors only, except for the two majors that
 # are known to break this codebase (pandas 3 and dash 4).
-fastapi>=0.100.0
+fastapi>=0.141.1
 uvicorn[standard]>=0.20.0
 gunicorn>=20.0.0
 dash>=2.15.0,<4
